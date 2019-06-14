@@ -80,7 +80,7 @@ void GUIRenderer::UpdateTexture()
 void GUIRenderer::ShowImage()
 {
     ImGui::Begin("Image");
-    static char image_url[256] = "";
+    static char image_url[256] = "https://raw.githubusercontent.com/czoido/imgui-opencv/master/data/bird.jpeg";
     ImGui::InputText("URL:", image_url, IM_ARRAYSIZE(image_url));
     ImGui::SameLine();
     if (ImGui::Button("Open"))
@@ -99,7 +99,9 @@ void GUIRenderer::ShowImage()
             cv::Mat image = cv::imread(filename.c_str());
             if (!image.empty())
             {
-                resize(image, resized_image_, cv::Size(640, 480));
+                int resized_width = 640;
+                double scale = static_cast<float>(resized_width)/image.size().width;
+                cv::resize(image, resized_image_, cv::Size(0, 0), scale, scale);
                 resized_image_.copyTo(thresholded_image_);
                 UpdateTexture();
             }
