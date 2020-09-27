@@ -80,6 +80,7 @@ void GUIRenderer::UpdateTexture()
 void GUIRenderer::ShowImage()
 {
     bool* p_open = new bool;
+    cv::Mat image;
     ImGui::Begin("Image", p_open, ImGuiWindowFlags_MenuBar);
     if (ImGui::BeginMenuBar())
     {
@@ -109,7 +110,7 @@ void GUIRenderer::ShowImage()
         }
         if (filename != "")
         {
-            cv::Mat image = cv::imread(filename.c_str());
+            image = cv::imread(filename.c_str());
             if (!image.empty())
             {
                 int resized_width = 640;
@@ -133,7 +134,30 @@ void GUIRenderer::ShowImage()
             ImGui::Combo("", &selectedItem, items, IM_ARRAYSIZE(items));
             ImGui::SameLine();
             if (ImGui::Button("Apply")) {
-                /* Do stuff */
+                switch (selectedItem)
+                {
+                // User selected the "Image Negative" effect
+                case 0: {
+                    resized_image_ = 255 - resized_image_;
+                    resized_image_.copyTo(thresholded_image_);
+                    UpdateTexture();
+                }
+                // User selected the "Bit-plane" effect
+                case 1: {
+                    std::string file_name("bird_bit0.png");
+                    for (uint32_t i(0); i < 8; ++i) {
+                        cv::Mat out((resized_image_ / (1<<i) & 1) * 255);
+                        cv::imwrite(file_name, out);
+                        file_name[8] += 1;
+                    }
+                }
+                // User selected the "Log" effect
+                case 2: {
+                
+                }
+                default:
+                    break;
+                }
             }
         ImGui::EndChild;
     }
