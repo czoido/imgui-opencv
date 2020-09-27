@@ -79,7 +79,19 @@ void GUIRenderer::UpdateTexture()
 
 void GUIRenderer::ShowImage()
 {
-    ImGui::Begin("Image");
+    bool* p_open = new bool;
+    ImGui::Begin("Image", p_open, ImGuiWindowFlags_MenuBar);
+    if (ImGui::BeginMenuBar())
+    {
+        if (ImGui::BeginMenu("File"))
+        {
+            if (ImGui::MenuItem("Open..", "Ctrl+O")) { /* Do stuff */ }
+            if (ImGui::MenuItem("Save", "Ctrl+S")) { /* Do stuff */ }
+            if (ImGui::MenuItem("Exit", "Ctrl+W")) { /* Do stuff */ }
+            ImGui::EndMenu();
+        }
+        ImGui::EndMenuBar();
+    }
     // Image downloaded from: https://www.pexels.com/photo/green-bird-1661179/
     static char image_url[256] = "https://raw.githubusercontent.com/czoido/imgui-opencv/master/data/bird.jpeg";
     ImGui::InputText("URL:", image_url, IM_ARRAYSIZE(image_url));
@@ -113,13 +125,18 @@ void GUIRenderer::ShowImage()
         ImVec2 canvas_size = ImVec2(image_width_, image_height_);
         ImGui::ImageButton((void *)(intptr_t)texture_id_, canvas_size, ImVec2(0, 0), ImVec2(1, 1), 0);
         ImGui::PushItemWidth(300);
-        if (ImGui::SliderInt("threshold level", &threshold_, 0, 255))
-        {
-            cv::threshold(resized_image_, thresholded_image_, threshold_, 255, cv::THRESH_BINARY);
-            UpdateTexture();
-        }
+        ImGui::SameLine();
+        ImGui::BeginChild("file");
+            ImGui::Text("Pixel Effects");
+            static const char* items[]{ "Image Negative", "Bit-plane", "Log", "Power-law/gamma", "Linear/piecewise-linear", "Image arithmetic", "Image set", "Binarization/thresholding", "Logical operations" };
+            static int selectedItem = 0;
+            ImGui::Combo("", &selectedItem, items, IM_ARRAYSIZE(items));
+            ImGui::SameLine();
+            if (ImGui::Button("Apply")) {
+                /* Do stuff */
+            }
+        ImGui::EndChild;
     }
-    ImGui::End();
 }
 
 void GUIRenderer::Render()
@@ -130,7 +147,6 @@ void GUIRenderer::Render()
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
-
         ShowImage();
 
         ImGui::Render();
