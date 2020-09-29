@@ -1,4 +1,5 @@
-#include "../include/gui_renderer.hpp"
+﻿#include "../include/gui_renderer.hpp"
+#include <cmath>
 
 static void glfw_error_callback(int error, const char *description)
 {
@@ -81,6 +82,8 @@ void GUIRenderer::ShowImage()
 {
     bool* p_open = new bool;
     cv::Mat image;
+    cv::Mat arithmetic_image;
+    cv::Mat dst;
     ImGui::Begin("Image", p_open, ImGuiWindowFlags_MenuBar);
     if (ImGui::BeginMenuBar())
     {
@@ -93,8 +96,8 @@ void GUIRenderer::ShowImage()
         }
         ImGui::EndMenuBar();
     }
-    // Image downloaded from: https://www.pexels.com/photo/green-bird-1661179/
-    static char image_url[256] = "https://raw.githubusercontent.com/czoido/imgui-opencv/master/data/bird.jpeg";
+
+    static char image_url[256] = "https://raw.githubusercontent.com/cleverSheep/ecu_flood/master/app/another_dark.jpg";
     ImGui::InputText("URL:", image_url, IM_ARRAYSIZE(image_url));
     ImGui::SameLine();
     if (ImGui::Button("Open"))
@@ -125,24 +128,25 @@ void GUIRenderer::ShowImage()
     {
         ImVec2 canvas_size = ImVec2(image_width_, image_height_);
         ImGui::ImageButton((void *)(intptr_t)texture_id_, canvas_size, ImVec2(0, 0), ImVec2(1, 1), 0);
-        ImGui::PushItemWidth(300);
+        ImGui::PushItemWidth(70);
         ImGui::SameLine();
-        ImGui::BeginChild("file");
-            ImGui::Text("Pixel Effects");
-            static const char* items[]{ "Image Negative", "Bit-plane", "Log", "Power-law/gamma", "Linear/piecewise-linear", "Image arithmetic", "Image set", "Binarization/thresholding", "Logical operations" };
+        ImGui::BeginChild("#general_effects");
+            ImGui::Text("General Pixel Effects");
+            static const char* items[]{ "Image Negative", "Bit-plane", "Log", "Linear/piecewise-linear", "Image set", "Logical operations" };
             static int selectedItem = 0;
             ImGui::Combo("", &selectedItem, items, IM_ARRAYSIZE(items));
             ImGui::SameLine();
             if (ImGui::Button("Apply")) {
                 switch (selectedItem)
                 {
-                // User selected the "Image Negative" effect
+                /** User selected the "Image Negative" effect */
                 case 0: {
                     resized_image_ = 255 - resized_image_;
                     resized_image_.copyTo(thresholded_image_);
                     UpdateTexture();
+                    break;
                 }
-                // User selected the "Bit-plane" effect
+                /** User selected the "Bit-plane" effect */
                 case 1: {
                     std::string file_name("bird_bit0.png");
                     for (uint32_t i(0); i < 8; ++i) {
@@ -150,17 +154,85 @@ void GUIRenderer::ShowImage()
                         cv::imwrite(file_name, out);
                         file_name[8] += 1;
                     }
+                    break;
                 }
-                // User selected the "Log" effect
-                case 2: {
-                
+                /** User selected the "Log" effect*/
+                /*case 2: {}*/
+                /** User selected the "Power-law/gamma effect" */
+                case 3: {
+                    ImGui::Text("Testing");
+                    int c;
+                    std::cout << "Enter C value : " << std::endl; // Type a number and press enter
+                    std::cin >> c; // Get user input from the keyboard
+                    int gamma;
+                    std::cout << "Enter Gamma value : " << std::endl; // Type a number and press enter
+                    std::cin >> gamma; // Get user input from the keyboard
+                    break;
+                }
+                /** User selected the "Linear/piecewise-linear" effect */
+                case 4: {
+                    break;
                 }
                 default:
                     break;
                 }
             }
         ImGui::EndChild;
+
+        ImGui::BeginChild("image_arithmetic");
+            ImGui::BeginChild("other_image");
+            ImGui::Text("Image Arithmetic");
+            static char arithmetic_image_url[256] = "https://raw.githubusercontent.com/czoido/imgui-opencv/master/data/bird.jpeg";
+                static const char* arithmetic_ops[]{ "Add", "Subtract", "Multiply", "Divide" };
+                static int selectItem = 0;
+                ImGui::InputText("URL", image_url, IM_ARRAYSIZE(arithmetic_image_url));
+                ImGui::Combo("", &selectItem, arithmetic_ops, IM_ARRAYSIZE(arithmetic_ops));
+                std::string filename = "";
+                ImGui::SameLine();
+                if (ImGui::Button("Apply")) {
+                    filename = downloader_.DownloadFile(std::string(image_url));
+                    if (filename != "") arithmetic_image = cv::imread(filename.c_str());
+                    switch (selectedItem)
+                    {
+                        /** User selected the "Add" operation */
+                    case 0: {
+                        cv::addWeighted(thresholded_image_, 0.5, arithmetic_image, 0.5, 0.0, dst);
+                        dst.copyTo(thresholded_image_);
+                        UpdateTexture();
+                    }
+                          /** User selected the "Subtract" operation */
+                    case 1: {}
+                          /** User selected the "Multiply" operation*/
+                          /*case 2: {}*/
+                          /** User selected the "Divide" operation */
+                    case 3: {}
+                    default:
+                        break;
+                    }
+                }
+            ImGui::EndChild;
+        ImGui::EndChild;
+
+        ImGui::BeginChild("binarization_thresholding");
+            ImGui::Text("Binarization");
+            if (ImGui::SliderInt("Threshold Level", &threshold_, 0, 255))
+            {
+                cv::threshold(resized_image_, thresholded_image_, threshold_, 255, cv::THRESH_BINARY);
+                UpdateTexture();
+            }
+        ImGui::EndChild();
+
+        ImGui::BeginChild("binarization_thresholding");
+            ImGui::Text("Power Law / Gamma");
+            if (ImGui::SliderInt("c", &b_threshold_, 0, 255))
+            {}
+            if (ImGui::SliderInt("Gamma", &c_threshold_, 0, 255))
+            {}
+            ImGui::PushItemWidth(270);
+            ImGui::Button("Apply");
+        ImGui::EndChild();
     }
+    ImGui::End;
 }
 
 void GUIRenderer::Render()

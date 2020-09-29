@@ -35,4 +35,6 @@ private:
 	cv::Mat resized_image_;
 	cv::Mat thresholded_image_;
 	int threshold_;
+	int b_threshold_;
+	int c_threshold_;
 };
