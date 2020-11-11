@@ -9,7 +9,7 @@ The program will download a picture from the Internet and apply a threshold to t
 
 1. Install conan: https://docs.conan.io/en/latest/installation.html
 2. Clone this repo: `git clone https://github.com/czoido/imgui-opencv.git`
-3. `cd imgui-opencv\`
+3. `cd imgui-opencv`
 4. `mkdir build && cd build`
 5. `conan install ..`
 6. `conan build ..`
