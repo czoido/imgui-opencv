@@ -16,14 +16,13 @@ Downloader::~Downloader(void)
 
 std::string Downloader::DownloadFile(const std::string &url)
 {
-	SharedPtr<InvalidCertificateHandler> pCertHandler = new AcceptCertificateHandler(false);
-	Context::Ptr pContext = new Context(Context::CLIENT_USE, "");
-	SSLManager::instance().initializeClient(0, pCertHandler, pContext);
-
 	Path path(url);
 	std::string filename = "";
 	try
 	{
+		SharedPtr<InvalidCertificateHandler> pCertHandler = new AcceptCertificateHandler(false);
+		Context::Ptr pContext = new Context(Context::CLIENT_USE, "");
+		SSLManager::instance().initializeClient(0, pCertHandler, pContext);
 		URI uri(url);
 		std::unique_ptr<std::istream> pStr(URIStreamOpener::defaultOpener().open(uri));
 		std::ofstream fileStream;
