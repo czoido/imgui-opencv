@@ -1,19 +1,25 @@
-#include "../include/downloader.h"
+#include "downloader.h"
 #include <iterator>
 
 Downloader::Downloader(void)
 {
 	HTTPStreamFactory::registerFactory();
-	HTTPSStreamFactory::registerFactory();
 	FTPStreamFactory::registerFactory();
+	HTTPSStreamFactory::registerFactory();
+	Poco::Net::initializeSSL();
 }
 
 Downloader::~Downloader(void)
 {
+	Poco::Net::uninitializeSSL();
 }
 
 std::string Downloader::DownloadFile(const std::string &url)
 {
+	SharedPtr<InvalidCertificateHandler> pCertHandler = new AcceptCertificateHandler(false);
+	Context::Ptr pContext = new Context(Context::CLIENT_USE, "");
+	SSLManager::instance().initializeClient(0, pCertHandler, pContext);
+
 	Path path(url);
 	std::string filename = "";
 	try

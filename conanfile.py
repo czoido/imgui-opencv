@@ -1,13 +1,13 @@
 from conans import ConanFile, CMake
 
 
-class ShaderEditor(ConanFile):
+class ImguiOpencvDemo(ConanFile):
     settings = "os", "compiler", "build_type", "arch"
-    requires = "imgui/1.69@bincrafters/stable",\
-               "glfw/3.3@bincrafters/stable",\
-               "glew/2.1.0@bincrafters/stable",\
-               "opencv/4.1.0@conan/stable",\
-               "Poco/1.9.0@pocoproject/stable"
+    requires = "imgui/1.79",\
+               "glfw/3.3.2",\
+               "glew/2.1.0",\
+               "opencv/2.4.13.7",\
+               "poco/1.10.1"
 
     generators = "cmake"
 
@@ -19,3 +19,7 @@ class ShaderEditor(ConanFile):
     def imports(self):
         self.copy("*.dll", dst="bin", src="bin")
         self.copy("*.dylib*", dst="bin", src="lib")
+        self.copy("imgui_impl_glfw.cpp", dst="../src", src="./res/bindings")
+        self.copy("imgui_impl_opengl3.cpp", dst="../src", src="./res/bindings")
+        self.copy("imgui_impl_glfw.h*", dst="../include", src="./res/bindings")
+        self.copy("imgui_impl_opengl3.h*", dst="../include", src="./res/bindings")

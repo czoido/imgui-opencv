@@ -1,4 +1,4 @@
-#include "../include/gui_renderer.hpp"
+#include "gui_renderer.hpp"
 
 static void glfw_error_callback(int error, const char *description)
 {

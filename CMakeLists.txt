@@ -8,6 +8,8 @@ set(CMAKE_CXX_STANDARD 11)
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup()
 
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
+
 add_executable(imgui-opencv 
     app/main.cpp 
     src/imgui_impl_glfw.cpp
