@@ -10,10 +10,20 @@ The program will download a picture from the Internet and apply a threshold to t
 1. Install conan: https://docs.conan.io/en/latest/installation.html
 2. Clone this repo: `git clone https://github.com/czoido/imgui-opencv.git`
 3. `cd imgui-opencv`
+   For CMake
 4. `mkdir build && cd build`
 5. `conan install ..`
 6. `conan build ..`
 7. `./bin/imgui-opencv`
-8. You can use a custom url to load your image
-9. Click 'Open' to open the image
-10. Apply a threshold with the slider
+    For Visual Studio 16 2019
+4. `cd msvc`
+5. `conan install .. -g=MSBuildDeps -if=conan`
+6. Open msvc.sln
+7. Change to Release and x64 configuration in IDE
+8. Build solution & run
+
+
+App running
+You can use a custom url to load your image
+Click 'Open' to open the image
+Apply a threshold with the slider
