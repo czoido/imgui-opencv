@@ -367,3 +367,6 @@ include/imgui_impl_glfw.h
 include/imgui_impl_opengl3.h
 src/imgui_impl_glfw.cpp
 src/imgui_impl_opengl3.cpp
+msvc/conan
+msvc/include
+msvc/src
