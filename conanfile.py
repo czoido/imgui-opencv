@@ -6,10 +6,10 @@ class ImguiOpencvDemo(ConanFile):
     requires = "imgui/1.79",\
                "glfw/3.3.2",\
                "glew/2.1.0",\
-               "opencv/2.4.13.7",\
+               "opencv/4.5.2",\
                "poco/1.10.1"
 
-    generators = "cmake"
+    generators = "cmake_find_package"
 
     def build(self):
         cmake = CMake(self)

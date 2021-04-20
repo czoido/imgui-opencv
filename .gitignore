@@ -370,3 +370,4 @@ src/imgui_impl_opengl3.cpp
 msvc/conan
 msvc/include
 msvc/src
+.DS_Store

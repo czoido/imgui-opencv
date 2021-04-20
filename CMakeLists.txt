@@ -3,10 +3,18 @@ cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
 
 # project name and language
 project(imgui-opencv LANGUAGES CXX)
+
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_BINARY_DIR})
+list(APPEND CMAKE_PREFIX_PATH ${CMAKE_BINARY_DIR})
+
 set(CMAKE_CXX_STANDARD 11)
 
-include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
-conan_basic_setup()
+
+find_package(imgui)
+find_package(glfw3)
+find_package(glew)
+find_package(opencv)
+find_package(poco)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 
@@ -22,4 +30,4 @@ add_executable(imgui-opencv
     include/downloader.h
 )
 
-target_link_libraries(imgui-opencv ${CONAN_LIBS})
+target_link_libraries(imgui-opencv opencv::opencv imgui::imgui glfw::glfw GLEW::GLEW Poco::Poco)
